@@ -51,10 +51,10 @@ export function WorkbenchHeader(props: Props) {
           <h1>
             BitWave<span>Lab</span>
           </h1>
-          <p>Visual Signal Workflow Studio</p>
+          <span className="text-white text-md">Mahdi Khodaie</span>
         </div>
       </div>
-
+      
       <div className="template-switcher">
         <button
           type="button"

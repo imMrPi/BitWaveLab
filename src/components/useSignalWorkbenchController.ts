@@ -106,7 +106,7 @@ export function useSignalWorkbenchController() {
   }, [nodes]);
   const [selectionBox, setSelectionBox] = useState<SelectionBoxState>();
   const [insightNodeId, setInsightNodeId] = useState<string>();
-  const [showGuideNotes, setShowGuideNotes] = useState(true);
+  const [showGuideNotes, setShowGuideNotes] = useState(false);
   const [localRecommendationNodeId, setLocalRecommendationNodeId] = useState<string>();
   const [mobilePane, setMobilePane] = useState<MobilePane>("canvas");
   const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
