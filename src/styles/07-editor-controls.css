@@ -1,0 +1,212 @@
+/* v0.5 editor controls */
+.history-controls {
+  direction: ltr;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+}
+.history-controls button {
+  width: 27px !important;
+  height: 33px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #0d1117 !important;
+  color: #94a3b8 !important;
+  font-size: 14px !important;
+}
+.history-controls button + button {
+  border-left: 1px solid var(--border) !important;
+}
+.history-controls button:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+.locale-toggle {
+  height: 35px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 8px;
+  border: 1px solid rgba(34, 211, 238, 0.18);
+  border-radius: 8px;
+  background: rgba(34, 211, 238, 0.045);
+  color: #a5f3fc;
+}
+.locale-toggle b {
+  font-size: 9px;
+}
+.locale-toggle span {
+  color: #637082;
+  font-size: 7px;
+}
+.selection-box {
+  position: absolute;
+  z-index: 12;
+  border: 1px solid #a78bfa;
+  border-radius: 3px;
+  background: rgba(167, 139, 250, 0.09);
+  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.08) inset;
+  pointer-events: none;
+}
+.selection-box span {
+  position: absolute;
+  left: 5px;
+  top: 4px;
+  color: #c4b5fd;
+  font: 7px var(--font-geist-mono);
+}
+.node-header {
+  grid-template-columns: 28px 1fr 22px 22px 22px;
+}
+.node-bypass {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #566171;
+  font-size: 10px;
+}
+.node-bypass:hover,
+.node-bypass.active {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.08);
+}
+.graph-node.disabled {
+  border-style: dashed;
+  opacity: 0.68;
+  filter: saturate(0.45);
+}
+.graph-node.disabled .node-wave {
+  opacity: 0.45;
+}
+.graph-node.disabled:before {
+  content: "BYPASS";
+  position: absolute;
+  z-index: 5;
+  right: 9px;
+  top: 35px;
+  padding: 3px 5px;
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-radius: 4px;
+  background: #17140b;
+  color: #fcd34d;
+  font: 6px var(--font-geist-mono);
+}
+.bypass-badge {
+  margin-left: auto;
+  color: #fcd34d;
+  font: 6px var(--font-geist-mono);
+}
+.bypass-badge + .node-status {
+  margin-left: 0;
+}
+.inspector-bypass {
+  width: 100%;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #0e1218;
+  color: #aab4c0;
+  text-align: right;
+}
+.inspector-bypass > span {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 7px;
+  background: #1a2029;
+  color: #64748b;
+}
+.inspector-bypass b,
+.inspector-bypass small {
+  display: block;
+}
+.inspector-bypass b {
+  font-size: 8.5px;
+}
+.inspector-bypass small {
+  margin-top: 4px;
+  color: #596575;
+  font-size: 7px;
+}
+.inspector-bypass.active {
+  border-color: rgba(251, 191, 36, 0.22);
+  background: rgba(251, 191, 36, 0.045);
+}
+.inspector-bypass.active > span {
+  color: #fcd34d;
+  background: rgba(251, 191, 36, 0.09);
+}
+.constellation-note dl {
+  display: grid;
+  gap: 5px;
+  margin: 9px 0 0;
+}
+.constellation-note dl > div {
+  min-width: 120px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  border-top: 1px solid var(--border);
+}
+.constellation-note dt {
+  color: #4f5b69;
+  font-size: 6.5px;
+}
+.constellation-note dd {
+  margin: 0;
+  color: #aab4c0;
+  font: 7px var(--font-geist-mono);
+}
+.locale-en .library-panel,
+.locale-en .inspector-panel,
+.locale-en .mentor-panel,
+.locale-en .node-context-menu,
+.locale-en .template-mega-menu,
+.locale-en .docs-nav,
+.locale-en .docs-main {
+  direction: ltr;
+}
+.locale-en .algorithm-item,
+.locale-en .context-columns section button,
+.locale-en .mega-grid section button,
+.locale-en .inspector-bypass,
+.locale-en .docs-nav button {
+  text-align: left;
+}
+.locale-en .toggle.on span {
+  margin-left: 18px;
+  margin-right: 3px;
+}
+.locale-en .doc-breadcrumb,
+.locale-en .algorithm-doc-grid dd {
+  text-align: left;
+}
+.locale-en .docs-top {
+  direction: ltr;
+}
+.docs-locale {
+  margin-left: auto;
+}
+.locale-en .docs-locale {
+  margin-left: auto;
+}
+.locale-en .docs-top-stats {
+  margin-left: 0;
+}
+.locale-en .doc-callout {
+  direction: ltr;
+}
+

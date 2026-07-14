@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "./00-foundations.css";
+@import "./01-shell-header.css";
+@import "./02-workbench.css";
+@import "./03-workflow-v03.css";
+@import "./04-docs-portal.css";
+@import "./05-guided-workflow.css";
+@import "./06-algorithm-docs.css";
+@import "./07-editor-controls.css";
+@import "./08-learning-fourier.css";
+@import "./09-recommendations.css";
+@import "./10-media-nodes.css";
+@import "./11-fourier-epicycle.css";
+@import "./12-responsive-workspace.css";
+@import "./13-compact-header.css";
