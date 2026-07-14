@@ -1,6 +1,12 @@
 import { algorithmById } from "@/lib/signal-engine";
-import { deserializeWorkflow, serializeWorkflow } from "../../../domain/graph/graph.serialization";
-import type { GraphEdge, GraphNode } from "../../../domain/graph/graph.types";
+import {
+  deserializeWorkflow,
+  serializeWorkflow,
+} from "../../../domain/graph/graph.serialization";
+import type {
+  GraphEdge,
+  GraphNode,
+} from "../../../domain/graph/graph.types";
 
 const MAX_PROJECT_BYTES = 5 * 1024 * 1024;
 const MAX_PROJECT_NODES = 500;
@@ -9,7 +15,7 @@ export type ImportedWorkflow = {
   title: string;
   nodes: GraphNode[];
   edges: GraphEdge[];
-  diagnostics: string[];
+  diagnostics: ReturnType<typeof deserializeWorkflow>["diagnostics"];
 };
 
 export async function readWorkflowFile(file: File): Promise<ImportedWorkflow> {
