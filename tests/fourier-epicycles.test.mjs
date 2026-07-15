@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { computeComplexDFT, evaluateEpicycles, normalizePath, pathLength, prepareFourierPath, reconstructionError, resamplePath, selectHarmonics } from "../app/lib/fourier-epicycles.ts";
+import { computeComplexDFT, evaluateEpicycles, normalizePath, pathLength, prepareFourierPath, reconstructionError, resamplePath, selectHarmonics } from "../src/lib/fourier-epicycles.ts";
 
 test("polyline resampling produces stable near-uniform arc-length samples", () => {
   const source = [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 1 }];

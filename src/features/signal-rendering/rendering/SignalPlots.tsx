@@ -15,9 +15,9 @@ import {
 
 function EmptyPlot({ text }: { text: string }) {
   return (
-    <div className="plot-empty">
-      <span className="plot-empty-icon">⌁</span>
-      <p>{text}</p>
+    <div className="grid min-h-36 place-items-center content-center gap-2 rounded-lg border border-dashed border-white/10 bg-black/10 text-center text-slate-600">
+      <span className="text-2xl text-slate-700">⌁</span>
+      <p className="m-0 text-[8px] leading-5">{text}</p>
     </div>
   );
 }
@@ -25,23 +25,51 @@ function EmptyPlot({ text }: { text: string }) {
 export const MiniWave = memo(function MiniWave({
   data,
   active = false,
+  color = "#fbbf24",
 }: {
   data?: LabData;
   active?: boolean;
+  color?: string;
 }) {
   const samples = waveformFor(data);
   const fallback = Array.from(
     { length: 90 },
     (_, index) => Math.sin(index / 5) * Math.cos(index / 17),
   );
+  // The viewport shows only 90 units. Keeping a 270-unit cycle preserves the
+  // waveform's horizontal scale instead of squeezing a full cycle into the card.
+  const cycleWidth = 270;
+  const path = pathFromSamples(samples.length ? samples : fallback, cycleWidth, 34);
   return (
-    <div className={`node-wave ${active ? "active" : ""}`}>
-      <svg viewBox="0 0 180 34" preserveAspectRatio="none" aria-hidden="true">
-        <path
-          d={pathFromSamples(samples.length ? samples : fallback, 180, 34)}
-        />
+    <div className={`relative mx-2.5 mb-[7px] h-[50px] overflow-hidden rounded-[7px] border border-slate-400/[.08] bg-[#090d13] [background-image:linear-gradient(rgba(148,163,184,.06)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,.05)_1px,transparent_1px)] [background-size:100%_12px,24px_100%] ${active ? "opacity-100" : "opacity-80"}`}>
+      <svg className="relative h-full w-[400%]" viewBox="0 0 360 34" preserveAspectRatio="none" aria-hidden="true">
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="translate"
+            from="0 0"
+            to={`-${cycleWidth} 0`}
+            dur="12s"
+            repeatCount="indefinite"
+          />
+          <path
+            className="fill-none stroke-[1.5] [vector-effect:non-scaling-stroke]"
+            style={{ stroke: color }}
+            d={path}
+          />
+          <path
+            className="fill-none stroke-[1.5] [vector-effect:non-scaling-stroke]"
+            style={{ stroke: color }}
+            d={path}
+            transform={`translate(${cycleWidth} 0)`}
+          />
+          <g className="opacity-80" transform={`translate(${cycleWidth} 0)`}>
+            <line y1="1" y2="33" className="stroke-[.55] [stroke-dasharray:2_2]" style={{ stroke: color }} />
+            <circle cy="4" r="1.7" style={{ fill: color }} />
+          </g>
+        </g>
       </svg>
-      <i />
+      <i className={`pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#090d13] to-transparent ${active ? "opacity-70" : "opacity-40"}`} />
     </div>
   );
 });
@@ -68,7 +96,7 @@ export const TimePlot = memo(function TimePlot({
       />
     );
   return (
-    <div className="plot-wrap">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,1fr)_clamp(18px,3cqh,24px)] overflow-hidden rounded-lg border border-white/[.07] bg-black/15 [&>svg]:size-full">
       <svg
         viewBox="0 0 1000 210"
         preserveAspectRatio="none"
@@ -115,7 +143,7 @@ export const TimePlot = memo(function TimePlot({
           vectorEffect="non-scaling-stroke"
         />
       </svg>
-      <div className="plot-axis">
+      <div className="flex items-center justify-between border-t border-white/[.06] px-2 font-mono text-[7px] text-slate-600">
         <span>0 ms</span>
         <span>
           {tr(locale, "زمان", "Time")} · {visibleSamples.length}/
@@ -163,7 +191,7 @@ export const SpectrumPlot = memo(function SpectrumPlot({
     )
     .join(" ");
   return (
-    <div className="plot-wrap">
+    <div className="grid h-full min-h-0 grid-rows-[minmax(0,1fr)_clamp(18px,3cqh,24px)] overflow-hidden rounded-lg border border-white/[.07] bg-black/15 [&>svg]:size-full">
       <svg
         viewBox="0 0 1000 210"
         preserveAspectRatio="none"
@@ -194,7 +222,7 @@ export const SpectrumPlot = memo(function SpectrumPlot({
           vectorEffect="non-scaling-stroke"
         />
       </svg>
-      <div className="plot-axis">
+      <div className="flex items-center justify-between border-t border-white/[.06] px-2 font-mono text-[7px] text-slate-600">
         <span>DC</span>
         <span>{tr(locale, "فرکانس", "Frequency")}</span>
         <span>{formatSignalNumber(bins.at(-1)?.frequency ?? 0)} Hz</span>
@@ -245,8 +273,8 @@ export const ConstellationPlot = memo(function ConstellationPlot({
       ) / idealSymbols.length
     : averageEnergy;
   return (
-    <div className="constellation-wrap">
-      <svg viewBox="0 0 420 230" aria-label="نمودار صورت فلکی">
+    <div className="grid h-full min-h-0 grid-cols-[minmax(0,1fr)_clamp(130px,18cqw,210px)] gap-[clamp(4px,.7cqw,10px)] @max-[620px]:grid-cols-1">
+      <svg className="size-full min-h-48 rounded-lg border border-white/[.07] bg-black/15" viewBox="0 0 420 230" aria-label="نمودار صورت فلکی">
         <rect width="420" height="230" fill="rgba(3,7,18,.35)" />
         {Array.from({ length: 9 }, (_, index) => (
           <line
@@ -294,7 +322,6 @@ export const ConstellationPlot = memo(function ConstellationPlot({
         )}
         {idealSymbols.map((point, index) => (
           <circle
-            className="ideal-symbol"
             key={`ideal-${index}`}
             cx={210 + point.re * scale}
             cy={115 - point.im * scale}
@@ -307,7 +334,6 @@ export const ConstellationPlot = memo(function ConstellationPlot({
         ))}
         {symbols.slice(0, 360).map((point, index) => (
           <circle
-            className="received-symbol"
             key={index}
             cx={210 + point.re * scale}
             cy={115 - point.im * scale}
@@ -325,12 +351,12 @@ export const ConstellationPlot = memo(function ConstellationPlot({
           Q
         </text>
       </svg>
-      <div className="constellation-note">
-        <b>{modulationName}</b>
-        <span>
+      <div className="rounded-lg border border-white/[.07] bg-white/[.018] p-3">
+        <b className="block text-[10px] text-violet-300">{modulationName}</b>
+        <span className="mt-1 block text-[8px] text-slate-600">
           {symbols.length} {tr(locale, "سمبل", "symbols")}
         </span>
-        <dl>
+        <dl className="mt-3 grid gap-2 text-[7px] [&>div]:flex [&>div]:justify-between [&>div]:gap-2 [&_dt]:text-slate-600 [&_dd]:m-0 [&_dd]:font-mono [&_dd]:text-slate-300">
           <div>
             <dt>Mapping</dt>
             <dd>{mapping}</dd>
@@ -373,8 +399,8 @@ export const BitsPlot = memo(function BitsPlot({
     );
   const reference = data?.kind !== "bits" && data?.kind !== "frames";
   return (
-    <div className="bits-panel">
-      <div className="bits-caption">
+    <div className="overflow-hidden rounded-lg border border-white/[.07] bg-black/15">
+      <div className="border-b border-white/[.06] px-3 py-2 text-[8px] text-slate-500">
         {reference
           ? tr(
               locale,
@@ -388,18 +414,18 @@ export const BitsPlot = memo(function BitsPlot({
             )}{" "}
         · {bits.length}
       </div>
-      <div className="bits-view" dir="ltr">
+      <div className="flex flex-wrap gap-1 p-3 font-mono" dir="ltr">
         {bits.slice(0, 180).map((bit, index) => (
           <span
             key={index}
-            className={bit ? "bit-one" : "bit-zero"}
+            className={bit ? "grid size-5 place-items-center rounded bg-amber-400/15 text-[8px] text-amber-300" : "grid size-5 place-items-center rounded bg-white/[.035] text-[8px] text-slate-600"}
             title={`bit ${index}`}
           >
             {bit}
           </span>
         ))}
         {bits.length > 180 && (
-          <span className="bits-more">+{bits.length - 180}</span>
+          <span className="grid h-5 place-items-center rounded bg-violet-400/10 px-2 text-[7px] text-violet-300">+{bits.length - 180}</span>
         )}
       </div>
     </div>

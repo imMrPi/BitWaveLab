@@ -1,15 +1,117 @@
 @import "tailwindcss";
-@import "./00-foundations.css";
-@import "./01-shell-header.css";
-@import "./02-workbench.css";
-@import "./03-workflow-v03.css";
-@import "./04-docs-portal.css";
-@import "./05-guided-workflow.css";
-@import "./06-algorithm-docs.css";
-@import "./07-editor-controls.css";
-@import "./08-learning-fourier.css";
-@import "./09-recommendations.css";
-@import "./10-media-nodes.css";
-@import "./11-fourier-epicycle.css";
-@import "./12-responsive-workspace.css";
-@import "./13-compact-header.css";
+
+@theme {
+  --color-canvas: #080a0e;
+  --color-panel: #0e1117;
+  --color-panel-raised: #11151c;
+  --color-panel-hover: #151a22;
+  --color-accent: #fbbf24;
+  --color-success: #34d399;
+  --color-danger: #fb7185;
+}
+
+@layer base {
+  :root {
+    --bg: #080a0e;
+    --panel: #0e1117;
+    --panel-2: #11151c;
+    --panel-3: #151a22;
+    --border: rgba(148, 163, 184, 0.13);
+    --border-strong: rgba(148, 163, 184, 0.22);
+    --text: #f8fafc;
+    --muted: #7f8a9a;
+    --dim: #4b5565;
+    --amber: #fbbf24;
+    --amber-soft: rgba(251, 191, 36, 0.12);
+    --green: #34d399;
+    --red: #fb7185;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    color-scheme: dark;
+  }
+
+  body {
+    overflow: hidden;
+    font-family: var(--font-vazirmatn), "Segoe UI", Tahoma, Arial, sans-serif;
+    font-feature-settings: "ss01", "ss02";
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible {
+    outline: 2px solid rgba(251, 191, 36, 0.5);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: rgba(251, 191, 36, 0.25);
+    color: white;
+  }
+}
+
+@layer utilities {
+  /* Large displays need larger type, not a scaled-down workspace. These rules
+     raise only the compact typography tokens used throughout the application. */
+  @media (min-width: 1600px) {
+    .text-\[6px\],
+    .text-\[6\.5px\],
+    .text-\[7px\],
+    .text-\[7\.2px\],
+    .text-\[7\.5px\] {
+      font-size: 9px !important;
+    }
+
+    .text-\[8px\],
+    .text-\[8\.5px\] {
+      font-size: 10px !important;
+    }
+
+    .text-\[9px\],
+    .text-\[10px\] {
+      font-size: 11px !important;
+    }
+
+    .text-\[11px\],
+    .text-xs {
+      font-size: 13px !important;
+    }
+
+    .text-sm {
+      font-size: 15px !important;
+    }
+  }
+
+  @media (min-width: 2200px) {
+    .text-\[6px\],
+    .text-\[6\.5px\],
+    .text-\[7px\],
+    .text-\[7\.2px\],
+    .text-\[7\.5px\] {
+      font-size: 11px !important;
+    }
+
+    .text-\[8px\],
+    .text-\[8\.5px\] {
+      font-size: 12px !important;
+    }
+
+    .text-\[9px\],
+    .text-\[10px\] {
+      font-size: 13px !important;
+    }
+
+    .text-\[11px\],
+    .text-xs {
+      font-size: 15px !important;
+    }
+
+    .text-sm {
+      font-size: 17px !important;
+    }
+  }
+}

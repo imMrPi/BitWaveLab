@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState } from "react";
 import { algorithms, algorithmById, categoryMeta, constellationReference, formatKind, type AlgorithmDefinition } from "../lib/signal-engine";
 import { docChapters, docGroups } from "../lib/docs-content";
 import { localizeAlgorithm, localizeCategory, tr, useLocale, type Locale } from "../lib/i18n";
@@ -49,25 +49,204 @@ function buildDemo(algorithm:AlgorithmDefinition):Demo{
   return {values:sine,mode:"Signal Preview",xLabel:"زمان",yLabel:"دامنه",note:algorithm.theory};
 }
 
-function AlgorithmReference({algorithm,locale}:{algorithm:AlgorithmDefinition;locale:Locale}){
-  const demo=useMemo(()=>buildDemo(algorithm),[algorithm]); const copy=localizeAlgorithm(algorithm,locale); const categoryCopy=localizeCategory(algorithm.category,locale);
-  const visibleParams=algorithm.params.filter(param=>!param.hidden);
-  return <><div className="doc-breadcrumb">DOCS / ALGORITHMS / <span>{algorithm.id}</span></div><div className="algorithm-doc-title"><div className="algorithm-doc-icon" style={{"--doc-color":categoryMeta[algorithm.category].color} as CSSProperties}>{algorithm.shortName.slice(0,4)}</div><div><span>{categoryCopy.name}</span><h1>{copy.name}</h1><p>{copy.summary}</p></div></div>
-    <section className="specific-signal"><div className="interactive-head"><div><span>ALGORITHM-SPECIFIC SIGNAL</span><h2>{demo.mode}</h2></div><strong>{formatKind(algorithm.input,locale)} → {formatKind(algorithm.output,locale)}</strong></div><div className="specific-plot"><span className="y-label">{demo.yLabel}</span><svg viewBox="0 0 900 190" preserveAspectRatio="none">{demo.reference&&<path className="reference" d={path(demo.reference)}/>}<path d={path(demo.values)}/>{demo.points&&algorithm.category==="sampling"&&demo.points.map((point,i)=><circle key={i} cx={point.x*900} cy={95-point.y*68} r="3"/>)}</svg><span className="x-label">{demo.xLabel}</span></div>{demo.bits&&<div className="specific-bits" dir="ltr">{demo.bits.map((bit,i)=><span key={i} className={bit?"one":"zero"}>{bit}</span>)}</div>}{demo.points&&algorithm.category==="modulation"&&<div className="mini-constellation"><svg viewBox="0 0 160 160"><line x1="80" x2="80" y1="8" y2="152"/><line x1="8" x2="152" y1="80" y2="80"/>{demo.points.map((point,i)=><circle key={i} cx={80+point.x*48} cy={80-point.y*48} r="5"/>)}</svg><p>{tr(locale,"صورت فلکی مرتبط با همین مدولاسیون","Constellation for this modulation")}</p></div>}<p className="signal-note">{locale==="fa"?demo.note:englishDemoNote(algorithm)}</p></section>
-    <div className="algorithm-doc-grid"><section><h2>{tr(locale,"این بلوک دقیقاً چه می‌کند؟","What exactly does this block do?")}</h2><p>{copy.theory}</p><dl><div><dt>Operation</dt><dd>{algorithm.operation}</dd></div><div><dt>{tr(locale,"دقت مدل","Model fidelity")}</dt><dd>{algorithm.fidelity==="exact"?tr(locale,"پیاده‌سازی محاسباتی","Computational"):tr(locale,"مدل آموزشی ساده‌شده","Educational model")}</dd></div><div><dt>{tr(locale,"ورودی","Input")}</dt><dd>{formatKind(algorithm.input,locale)}</dd></div><div><dt>{tr(locale,"خروجی","Output")}</dt><dd>{formatKind(algorithm.output,locale)}</dd></div></dl></section><section><h2>{tr(locale,"پارامترهای قابل تنظیم","Adjustable parameters")}</h2>{visibleParams.length?<div className="doc-param-list">{visibleParams.map(param=><div key={param.key}><b>{locale==="fa"?param.label:param.key.replace(/([A-Z])/g," $1")}</b><span>{String(param.default)} {param.unit??""}</span><small>{param.type}{param.min!==undefined?` · ${param.min}…${param.max}`:""}</small></div>)}</div>:<p>{tr(locale,"این بلوک پارامتر قابل تنظیم ندارد و رفتار آن از ورودی تعیین می‌شود.","This block has no adjustable parameters; its behavior is determined by the input.")}</p>}</section></div><div className="doc-callout"><span>{tr(locale,"برای دانشجوی تازه‌کار","For a new student")}</span><p>{tr(locale,"اول نوع ورودی و خروجی را نگاه کن، سپس شکل سیگنال بالا را با Node قبلی مقایسه کن. اگر خروجی هنوز Bit Stream است، هنوز سیگنال فیزیکی برای ارسال ساخته نشده است.","Start with the input/output contract, then compare this signal with the previous node. A bit stream is logical data, not yet a physical transmit waveform.")}</p><Link href="/">{tr(locale,"بازکردن در آزمایشگاه ←","Open in the laboratory →")}</Link></div></>;
+function AlgorithmReference({ algorithm, locale }: { algorithm: AlgorithmDefinition; locale: Locale }) {
+  const demo = useMemo(() => buildDemo(algorithm), [algorithm]);
+  const copy = localizeAlgorithm(algorithm, locale);
+  const categoryCopy = localizeCategory(algorithm.category, locale);
+  const color = categoryMeta[algorithm.category].color;
+  const visibleParams = algorithm.params.filter((parameter) => !parameter.hidden);
+
+  return (
+    <>
+      <div className="mb-5 font-mono text-[8px] tracking-wider text-slate-600">
+        DOCS / ALGORITHMS / <span className="text-amber-300">{algorithm.id}</span>
+      </div>
+      <div className="mb-7 grid grid-cols-[68px_minmax(0,1fr)] items-center gap-4">
+        <div className="grid size-[68px] place-items-center rounded-2xl border font-mono text-[11px] font-black" style={{ color, borderColor: `${color}55`, background: `${color}12` }}>
+          {algorithm.shortName.slice(0, 4)}
+        </div>
+        <div className="min-w-0">
+          <span className="text-[8px] font-bold" style={{ color }}>{categoryCopy.name}</span>
+          <h1 className="my-1 text-2xl font-black tracking-tight text-white">{copy.name}</h1>
+          <p className="m-0 max-w-3xl text-[11px] leading-6 text-slate-500">{copy.summary}</p>
+        </div>
+      </div>
+
+      <section className="mb-5 overflow-hidden rounded-2xl border border-white/10 bg-[#0e1117]">
+        <div className="flex items-center justify-between gap-4 border-b border-white/[.07] px-4 py-3">
+          <div>
+            <span className="font-mono text-[7px] tracking-[.15em] text-amber-400">ALGORITHM-SPECIFIC SIGNAL</span>
+            <h2 className="mt-1 text-sm text-slate-100">{demo.mode}</h2>
+          </div>
+          <strong className="rounded-lg border border-white/10 bg-white/[.025] px-2.5 py-1.5 font-mono text-[8px] text-slate-400">
+            {formatKind(algorithm.input, locale)} → {formatKind(algorithm.output, locale)}
+          </strong>
+        </div>
+        <div className="relative h-56 bg-black/20 p-4 pb-7 ps-10">
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 -rotate-90 font-mono text-[7px] text-slate-600">{demo.yLabel}</span>
+          <svg className="size-full overflow-visible" viewBox="0 0 900 190" preserveAspectRatio="none">
+            {demo.reference && <path className="fill-none stroke-slate-500/40 stroke-[1.5]" d={path(demo.reference)} />}
+            <path className="fill-none stroke-amber-300 stroke-2" d={path(demo.values)} />
+            {demo.points && algorithm.category === "sampling" && demo.points.map((point, index) => (
+              <circle className="fill-cyan-300" key={index} cx={point.x * 900} cy={95 - point.y * 68} r="3" />
+            ))}
+          </svg>
+          <span className="absolute inset-x-0 bottom-2 text-center font-mono text-[7px] text-slate-600">{demo.xLabel}</span>
+        </div>
+        {demo.bits && (
+          <div className="flex flex-wrap gap-1 border-t border-white/[.06] px-4 py-3" dir="ltr">
+            {demo.bits.map((bit, index) => (
+              <span className={bit ? "grid size-6 place-items-center rounded bg-amber-400/15 font-mono text-[8px] text-amber-300" : "grid size-6 place-items-center rounded bg-white/[.035] font-mono text-[8px] text-slate-600"} key={index}>{bit}</span>
+            ))}
+          </div>
+        )}
+        {demo.points && algorithm.category === "modulation" && (
+          <div className="grid grid-cols-[120px_1fr] items-center gap-4 border-t border-white/[.06] px-4 py-3">
+            <svg className="size-28 rounded-lg bg-black/20" viewBox="0 0 160 160">
+              <line className="stroke-white/10" x1="80" x2="80" y1="8" y2="152" />
+              <line className="stroke-white/10" x1="8" x2="152" y1="80" y2="80" />
+              {demo.points.map((point, index) => <circle className="fill-violet-300" key={index} cx={80 + point.x * 48} cy={80 - point.y * 48} r="5" />)}
+            </svg>
+            <p className="text-[9px] leading-5 text-slate-500">{tr(locale, "صورت فلکی مرتبط با همین مدولاسیون", "Constellation for this modulation")}</p>
+          </div>
+        )}
+        <p className="m-0 border-t border-white/[.06] bg-amber-400/[.025] px-4 py-3 text-[9px] leading-6 text-slate-400">
+          {locale === "fa" ? demo.note : englishDemoNote(algorithm)}
+        </p>
+      </section>
+
+      <div className="mb-5 grid grid-cols-2 gap-4 max-[760px]:grid-cols-1 [&>section]:rounded-2xl [&>section]:border [&>section]:border-white/[.08] [&>section]:bg-white/[.018] [&>section]:p-4 [&_h2]:mb-3 [&_h2]:text-sm [&_h2]:text-slate-100 [&_p]:text-[10px] [&_p]:leading-6 [&_p]:text-slate-500">
+        <section>
+          <h2>{tr(locale, "این بلوک دقیقاً چه می‌کند؟", "What exactly does this block do?")}</h2>
+          <p>{copy.theory}</p>
+          <dl className="mt-4 grid gap-2 [&>div]:flex [&>div]:justify-between [&>div]:gap-3 [&>div]:border-t [&>div]:border-white/[.05] [&>div]:pt-2 [&_dt]:text-[8px] [&_dt]:text-slate-600 [&_dd]:m-0 [&_dd]:text-end [&_dd]:font-mono [&_dd]:text-[8px] [&_dd]:text-slate-300">
+            <div><dt>Operation</dt><dd>{algorithm.operation}</dd></div>
+            <div><dt>{tr(locale, "دقت مدل", "Model fidelity")}</dt><dd>{algorithm.fidelity === "exact" ? tr(locale, "پیاده‌سازی محاسباتی", "Computational") : tr(locale, "مدل آموزشی ساده‌شده", "Educational model")}</dd></div>
+            <div><dt>{tr(locale, "ورودی", "Input")}</dt><dd>{formatKind(algorithm.input, locale)}</dd></div>
+            <div><dt>{tr(locale, "خروجی", "Output")}</dt><dd>{formatKind(algorithm.output, locale)}</dd></div>
+          </dl>
+        </section>
+        <section>
+          <h2>{tr(locale, "پارامترهای قابل تنظیم", "Adjustable parameters")}</h2>
+          {visibleParams.length ? (
+            <div className="grid gap-2">
+              {visibleParams.map((parameter) => (
+                <div className="grid grid-cols-[1fr_auto] gap-1 rounded-lg bg-black/15 p-2.5" key={parameter.key}>
+                  <b className="text-[8px] text-slate-300">{locale === "fa" ? parameter.label : parameter.key.replace(/([A-Z])/g, " $1")}</b>
+                  <span className="font-mono text-[8px] text-amber-300">{String(parameter.default)} {parameter.unit ?? ""}</span>
+                  <small className="col-span-2 text-[7px] text-slate-600">{parameter.type}{parameter.min !== undefined ? ` · ${parameter.min}…${parameter.max}` : ""}</small>
+                </div>
+              ))}
+            </div>
+          ) : <p>{tr(locale, "این بلوک پارامتر قابل تنظیم ندارد و رفتار آن از ورودی تعیین می‌شود.", "This block has no adjustable parameters; its behavior is determined by the input.")}</p>}
+        </section>
+      </div>
+      <div className="rounded-2xl border border-cyan-400/15 bg-cyan-400/[.035] p-4">
+        <span className="text-[8px] font-black text-cyan-300">{tr(locale, "برای دانشجوی تازه‌کار", "For a new student")}</span>
+        <p className="my-2 text-[10px] leading-6 text-slate-400">{tr(locale, "اول نوع ورودی و خروجی را نگاه کن، سپس شکل سیگنال بالا را با Node قبلی مقایسه کن. اگر خروجی هنوز Bit Stream است، هنوز سیگنال فیزیکی برای ارسال ساخته نشده است.", "Start with the input/output contract, then compare this signal with the previous node. A bit stream is logical data, not yet a physical transmit waveform.")}</p>
+        <Link className="text-[9px] font-bold text-cyan-300 no-underline hover:text-cyan-200" href="/">{tr(locale, "بازکردن در آزمایشگاه ←", "Open in the laboratory →")}</Link>
+      </div>
+    </>
+  );
 }
 
-function ChapterReference({chapter,locale}:{chapter:(typeof docChapters)[number];locale:Locale}){
-  const en=chapterEnglish[chapter.id]; const title=locale==="fa"?chapter.title:(en?.title??chapter.english); const summary=locale==="fa"?chapter.summary:(en?.summary??chapter.summary); const concepts=locale==="fa"?chapter.concepts:(en?.concepts??chapter.concepts);
-  return <><div className="doc-breadcrumb">DOCS / {chapter.group} / <span>{chapter.english}</span></div><h1>{title}</h1><p className="doc-lead">{summary}</p><div className="doc-grid"><section><h2>{tr(locale,"آنچه باید یاد بگیری","Learning objectives")}</h2><ul>{concepts.map(item=><li key={item}>{item}</li>)}</ul></section><section><h2>{tr(locale,"الگوریتم‌های کلیدی","Key algorithms")}</h2><div className="doc-tags">{chapter.algorithms.map(item=><span key={item}>{item}</span>)}</div>{chapter.equation&&<code>{chapter.equation}</code>}</section></div><section className="chapter-map"><h2>{tr(locale,"مسیر یادگیری پیشنهادی","Suggested learning path")}</h2><p>{tr(locale,"مفهوم را بخوان، یک Workflow مرتبط باز کن، خروجی هر Node را با Scope مستقل نگه دار و فقط یک پارامتر را در هر آزمایش تغییر بده.","Read the concept, open a related workflow, keep every stage visible with an independent scope, and change one parameter at a time.")}</p></section></>;
+function ChapterReference({ chapter, locale }: { chapter: (typeof docChapters)[number]; locale: Locale }) {
+  const english = chapterEnglish[chapter.id];
+  const title = locale === "fa" ? chapter.title : (english?.title ?? chapter.english);
+  const summary = locale === "fa" ? chapter.summary : (english?.summary ?? chapter.summary);
+  const concepts = locale === "fa" ? chapter.concepts : (english?.concepts ?? chapter.concepts);
+  return (
+    <>
+      <div className="mb-5 font-mono text-[8px] tracking-wider text-slate-600">DOCS / {chapter.group} / <span className="text-amber-300">{chapter.english}</span></div>
+      <h1 className="mb-3 text-3xl font-black tracking-tight text-white">{title}</h1>
+      <p className="mb-7 max-w-4xl text-[12px] leading-7 text-slate-400">{summary}</p>
+      <div className="grid grid-cols-2 gap-4 max-[700px]:grid-cols-1 [&>section]:rounded-2xl [&>section]:border [&>section]:border-white/[.08] [&>section]:bg-white/[.018] [&>section]:p-5 [&_h2]:mb-4 [&_h2]:text-sm [&_h2]:text-slate-100">
+        <section>
+          <h2>{tr(locale, "آنچه باید یاد بگیری", "Learning objectives")}</h2>
+          <ul className="grid gap-3 ps-5 text-[10px] leading-6 text-slate-400 marker:text-amber-400">{concepts.map((item) => <li key={item}>{item}</li>)}</ul>
+        </section>
+        <section>
+          <h2>{tr(locale, "الگوریتم‌های کلیدی", "Key algorithms")}</h2>
+          <div className="flex flex-wrap gap-2">{chapter.algorithms.map((item) => <span className="rounded-lg border border-white/10 bg-black/15 px-2.5 py-1.5 font-mono text-[8px] text-slate-400" key={item}>{item}</span>)}</div>
+          {chapter.equation && <code className="mt-5 block overflow-x-auto rounded-xl bg-black/25 p-4 font-mono text-[11px] text-violet-300" dir="ltr">{chapter.equation}</code>}
+        </section>
+      </div>
+      <section className="mt-4 rounded-2xl border border-emerald-400/15 bg-emerald-400/[.035] p-5">
+        <h2 className="mb-2 text-sm text-emerald-300">{tr(locale, "مسیر یادگیری پیشنهادی", "Suggested learning path")}</h2>
+        <p className="m-0 text-[10px] leading-6 text-slate-400">{tr(locale, "مفهوم را بخوان، یک Workflow مرتبط باز کن، خروجی هر Node را با Scope مستقل نگه دار و فقط یک پارامتر را در هر آزمایش تغییر بده.", "Read the concept, open a related workflow, keep every stage visible with an independent scope, and change one parameter at a time.")}</p>
+      </section>
+    </>
+  );
 }
 
-export default function DocsPortal(){
-  const {locale,setLocale}=useLocale();
-  const [view,setView]=useState<"chapters"|"algorithms">("algorithms"); const [activeChapter,setActiveChapter]=useState("signals"); const [activeAlgorithm,setActiveAlgorithm]=useState("source.bits"); const [search,setSearch]=useState(""); const [mobileNavOpen,setMobileNavOpen]=useState(false);
-  const query=search.trim().toLowerCase(); const filteredAlgorithms=useMemo(()=>algorithms.filter(a=>{const copy=localizeAlgorithm(a,locale);return !query||`${a.name} ${a.shortName} ${a.summary} ${copy.name} ${copy.summary} ${a.tags.join(" ")}`.toLowerCase().includes(query)}),[query,locale]); const chapter=docChapters.find(c=>c.id===activeChapter)??docChapters[0]; const algorithm=algorithmById.get(activeAlgorithm)??algorithms[0];
-  return <div className={`docs-shell locale-${locale} ${mobileNavOpen?"mobile-nav-open":""}`} dir={locale==="fa"?"rtl":"ltr"} lang={locale}><header className="docs-top"><Link href="/" className="docs-brand"><b>BitWave<span>Lab</span></b><small>Documentation</small></Link><button className="docs-mobile-menu" type="button" aria-expanded={mobileNavOpen} onClick={()=>setMobileNavOpen(value=>!value)}><span>⌕</span>{tr(locale,"فهرست و جست‌وجو","Browse docs")}</button><div className="docs-mode"><button className={view==="algorithms"?"active":""} onClick={()=>setView("algorithms")}>{locale==="fa"?`مرجع ${algorithms.length.toLocaleString("fa-IR")} الگوریتم`:`${algorithms.length}-algorithm reference`}</button><button className={view==="chapters"?"active":""} onClick={()=>setView("chapters")}>{tr(locale,"مسیر مفاهیم","Concept path")}</button></div><button className="locale-toggle docs-locale" onClick={()=>setLocale(locale==="fa"?"en":"fa")}><b>{locale==="fa"?"EN":"فا"}</b><span>{locale==="fa"?"English":"فارسی"}</span></button><div className="docs-top-stats"><span><b>{docChapters.length}</b> {tr(locale,"فصل","chapters")}</span><span><b>{algorithms.length}</b> {tr(locale,"الگوریتم","algorithms")}</span></div><Link href="/" className="back-lab">{tr(locale,"بازگشت به آزمایشگاه ←","Back to laboratory →")}</Link></header>
-    {mobileNavOpen&&<button type="button" className="docs-mobile-dismiss" aria-label={tr(locale,"بستن فهرست","Close navigation")} onClick={()=>setMobileNavOpen(false)}/>}<aside className="docs-nav"><label><span>⌕</span><input value={search} onChange={e=>setSearch(e.target.value)} placeholder={view==="algorithms"?tr(locale,"نام الگوریتم، کاربرد یا تگ…","Algorithm name, use or tag…"):tr(locale,"جست‌وجوی مفاهیم…","Search concepts…")}/></label><div className="docs-nav-scroll lab-scrollbar">{view==="algorithms"?(Object.entries(categoryMeta) as Array<[keyof typeof categoryMeta,(typeof categoryMeta)[keyof typeof categoryMeta]]>).sort((a,b)=>a[1].order-b[1].order).map(([category,meta])=>{const items=filteredAlgorithms.filter(a=>a.category===category);if(!items.length)return null;return <section key={category}><h3 style={{color:meta.color}}>{localizeCategory(category,locale).name}<small>{items.length}</small></h3>{items.map(a=>{const copy=localizeAlgorithm(a,locale);return <button key={a.id} className={activeAlgorithm===a.id?"active":""} onClick={()=>{setActiveAlgorithm(a.id);setMobileNavOpen(false)}}><span>{a.shortName.slice(0,3)}</span><div><b>{copy.name}</b><small>{formatKind(a.input,locale)} → {formatKind(a.output,locale)}</small></div></button>})}</section>}):docGroups.map(group=><section key={group}><h3>{locale==="fa"?group:(docGroupEnglish[group]??group)}</h3>{docChapters.filter(c=>c.group===group&&(!query||`${c.title} ${c.summary} ${chapterEnglish[c.id]?.title??""}`.toLowerCase().includes(query))).map(c=><button key={c.id} className={activeChapter===c.id?"active":""} onClick={()=>{setActiveChapter(c.id);setMobileNavOpen(false)}}><span>{String(docChapters.indexOf(c)+1).padStart(2,"0")}</span><div><b>{locale==="fa"?c.title:(chapterEnglish[c.id]?.title??c.english)}</b><small>{c.english}</small></div></button>)}</section>)}</div></aside>
-    <main className="docs-main lab-scrollbar"><article>{view==="algorithms"?<AlgorithmReference algorithm={algorithm} locale={locale}/>:<ChapterReference chapter={chapter} locale={locale}/>}</article></main>
-  </div>;
+export default function DocsPortal() {
+  const { locale, setLocale } = useLocale();
+  const [view, setView] = useState<"chapters" | "algorithms">("algorithms");
+  const [activeChapter, setActiveChapter] = useState("signals");
+  const [activeAlgorithm, setActiveAlgorithm] = useState("source.bits");
+  const [search, setSearch] = useState("");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const query = search.trim().toLowerCase();
+  const filteredAlgorithms = useMemo(() => algorithms.filter((item) => {
+    const copy = localizeAlgorithm(item, locale);
+    return !query || `${item.name} ${item.shortName} ${item.summary} ${copy.name} ${copy.summary} ${item.tags.join(" ")}`.toLowerCase().includes(query);
+  }), [query, locale]);
+  const chapter = docChapters.find((item) => item.id === activeChapter) ?? docChapters[0];
+  const algorithm = algorithmById.get(activeAlgorithm) ?? algorithms[0];
+  const navigationButton = "mb-1 grid w-full grid-cols-[34px_minmax(0,1fr)] items-center gap-2 rounded-lg border p-2 text-start transition";
+
+  return (
+    <div className="grid h-dvh w-full grid-cols-[280px_minmax(0,1fr)] grid-rows-[64px_minmax(0,1fr)] overflow-hidden bg-canvas text-slate-100 max-[760px]:grid-cols-1" dir={locale === "fa" ? "rtl" : "ltr"} lang={locale}>
+      <header className="col-span-2 flex items-center gap-3 border-b border-white/10 bg-[#0a0d12] px-4 [direction:ltr] max-[760px]:col-span-1 max-[760px]:px-2">
+        <Link className="grid min-w-40 no-underline max-[900px]:min-w-32" href="/">
+          <b className="text-sm font-black text-white">BitWave<span className="text-amber-400">Lab</span></b>
+          <small className="font-mono text-[7px] tracking-[.14em] text-slate-600">DOCUMENTATION</small>
+        </Link>
+        <button className="hidden h-9 items-center gap-2 rounded-lg border border-white/10 bg-white/[.03] px-3 text-[8px] text-slate-300 max-[760px]:flex" type="button" aria-expanded={mobileNavOpen} onClick={() => setMobileNavOpen((value) => !value)}>
+          <span>⌕</span>{tr(locale, "فهرست", "Browse")}
+        </button>
+        <div className="flex h-9 overflow-hidden rounded-lg border border-white/10 max-[580px]:hidden">
+          <button className={`px-3 text-[8px] transition ${view === "algorithms" ? "bg-amber-400/10 text-amber-300" : "bg-transparent text-slate-500 hover:bg-white/5"}`} onClick={() => setView("algorithms")}>{locale === "fa" ? `مرجع ${algorithms.length.toLocaleString("fa-IR")} الگوریتم` : `${algorithms.length}-algorithm reference`}</button>
+          <button className={`border-s border-white/10 px-3 text-[8px] transition ${view === "chapters" ? "bg-amber-400/10 text-amber-300" : "bg-transparent text-slate-500 hover:bg-white/5"}`} onClick={() => setView("chapters")}>{tr(locale, "مسیر مفاهیم", "Concept path")}</button>
+        </div>
+        <button className="ms-auto flex h-9 items-center gap-2 rounded-lg border border-white/10 bg-white/[.03] px-2.5 text-[8px] text-slate-400 hover:bg-white/[.06]" onClick={() => setLocale(locale === "fa" ? "en" : "fa")}>
+          <b className="text-amber-300">{locale === "fa" ? "EN" : "فا"}</b><span className="max-[520px]:hidden">{locale === "fa" ? "English" : "فارسی"}</span>
+        </button>
+        <div className="flex gap-3 font-mono text-[7px] text-slate-600 max-[1000px]:hidden"><span><b className="text-slate-300">{docChapters.length}</b> {tr(locale, "فصل", "chapters")}</span><span><b className="text-slate-300">{algorithms.length}</b> {tr(locale, "الگوریتم", "algorithms")}</span></div>
+        <Link className="rounded-lg border border-white/10 px-3 py-2 text-[8px] text-slate-400 no-underline hover:bg-white/5 hover:text-white max-[860px]:hidden" href="/">{tr(locale, "بازگشت به آزمایشگاه ←", "Back to laboratory →")}</Link>
+      </header>
+
+      {mobileNavOpen && <button type="button" className="fixed inset-0 z-40 border-0 bg-black/60 backdrop-blur-sm min-[761px]:hidden" aria-label={tr(locale, "بستن فهرست", "Close navigation")} onClick={() => setMobileNavOpen(false)} />}
+      <aside className={`min-h-0 border-e border-white/10 bg-[#0c0f14] transition-transform max-[760px]:fixed max-[760px]:inset-y-0 max-[760px]:start-0 max-[760px]:z-50 max-[760px]:w-[min(320px,88vw)] ${mobileNavOpen ? "max-[760px]:translate-x-0" : locale === "fa" ? "max-[760px]:translate-x-full" : "max-[760px]:-translate-x-full"}`}>
+        <label className="m-3 flex h-10 items-center gap-2 rounded-lg border border-white/10 bg-black/20 px-3 text-slate-600 focus-within:border-amber-400/30">
+          <span>⌕</span><input className="min-w-0 flex-1 border-0 bg-transparent text-[9px] text-slate-200 outline-none placeholder:text-slate-600" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={view === "algorithms" ? tr(locale, "نام الگوریتم، کاربرد یا تگ…", "Algorithm name, use or tag…") : tr(locale, "جست‌وجوی مفاهیم…", "Search concepts…")} />
+        </label>
+        <div className="h-[calc(100%-64px)] overflow-y-auto px-2.5 pb-6 [scrollbar-color:rgba(148,163,184,.18)_transparent] [scrollbar-width:thin]">
+          {view === "algorithms" ? (Object.entries(categoryMeta) as Array<[keyof typeof categoryMeta, (typeof categoryMeta)[keyof typeof categoryMeta]]>).sort((a, b) => a[1].order - b[1].order).map(([category, meta]) => {
+            const items = filteredAlgorithms.filter((item) => item.category === category);
+            if (!items.length) return null;
+            return <section className="mb-4" key={category}>
+              <h3 className="mb-1.5 flex items-center justify-between px-1 text-[8px]" style={{ color: meta.color }}>{localizeCategory(category, locale).name}<small className="text-[7px] text-slate-600">{items.length}</small></h3>
+              {items.map((item) => {
+                const copy = localizeAlgorithm(item, locale);
+                return <button key={item.id} className={`${navigationButton} ${activeAlgorithm === item.id ? "border-amber-400/20 bg-amber-400/[.07]" : "border-transparent bg-white/[.015] hover:border-white/10 hover:bg-white/[.04]"}`} onClick={() => { setActiveAlgorithm(item.id); setMobileNavOpen(false); }}>
+                  <span className="grid size-8 place-items-center rounded-lg bg-white/5 font-mono text-[7px] font-black text-slate-400">{item.shortName.slice(0, 3)}</span>
+                  <div className="min-w-0"><b className="block truncate text-[8px] text-slate-300">{copy.name}</b><small className="mt-0.5 block truncate font-mono text-[6px] text-slate-600">{formatKind(item.input, locale)} → {formatKind(item.output, locale)}</small></div>
+                </button>;
+              })}
+            </section>;
+          }) : docGroups.map((group) => <section className="mb-4" key={group}>
+            <h3 className="mb-1.5 px-1 text-[8px] text-amber-300">{locale === "fa" ? group : (docGroupEnglish[group] ?? group)}</h3>
+            {docChapters.filter((item) => item.group === group && (!query || `${item.title} ${item.summary} ${chapterEnglish[item.id]?.title ?? ""}`.toLowerCase().includes(query))).map((item) => <button key={item.id} className={`${navigationButton} ${activeChapter === item.id ? "border-amber-400/20 bg-amber-400/[.07]" : "border-transparent bg-white/[.015] hover:border-white/10 hover:bg-white/[.04]"}`} onClick={() => { setActiveChapter(item.id); setMobileNavOpen(false); }}>
+              <span className="grid size-8 place-items-center rounded-lg bg-white/5 font-mono text-[7px] text-slate-500">{String(docChapters.indexOf(item) + 1).padStart(2, "0")}</span>
+              <div className="min-w-0"><b className="block truncate text-[8px] text-slate-300">{locale === "fa" ? item.title : (chapterEnglish[item.id]?.title ?? item.english)}</b><small className="mt-0.5 block truncate text-[6px] text-slate-600">{item.english}</small></div>
+            </button>)}
+          </section>)}
+        </div>
+      </aside>
+      <main className="min-h-0 overflow-y-auto [scrollbar-color:rgba(148,163,184,.18)_transparent] [scrollbar-width:thin]">
+        <article className="mx-auto max-w-6xl p-8 max-[760px]:p-4">{view === "algorithms" ? <AlgorithmReference algorithm={algorithm} locale={locale} /> : <ChapterReference chapter={chapter} locale={locale} />}</article>
+      </main>
+    </div>
+  );
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Vazirmatn } from "next/font/google";
 import "@/styles/styles.css";
-import "@/features/workbench/module/workbench.mobile.css";
 
 const vazirmatn = Vazirmatn({
   variable: "--font-vazirmatn",

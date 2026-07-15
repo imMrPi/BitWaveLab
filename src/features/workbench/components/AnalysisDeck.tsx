@@ -43,12 +43,12 @@ export function AnalysisDeck({
   const algorithm = node ? algorithmById.get(node.algorithmId) : undefined;
   return (
     <section
-      className="scope-card"
+      className="@container mt-[3px] grid min-h-0 grid-rows-[clamp(38px,4cqw,52px)_minmax(0,1fr)] overflow-hidden rounded-[10px] border border-slate-400/[.13] bg-[#0e1117]"
       aria-label={tr(locale, "پنل تحلیل سیگنال", "Signal analysis panel")}
     >
-      <div className="scope-header">
+      <div className="flex min-w-0 items-center justify-between gap-[clamp(4px,1cqw,12px)] border-b border-white/10 bg-[#11151c]/90 px-[clamp(4px,1cqw,12px)] [direction:ltr]">
         <div
-          className="scope-tabs"
+          className="grid h-full min-w-0 flex-1 grid-cols-5 items-stretch gap-[clamp(1px,.35cqw,4px)] overflow-hidden"
           role="tablist"
           aria-label={tr(locale, "نماهای تحلیل", "Analysis views")}
         >
@@ -58,24 +58,24 @@ export function AnalysisDeck({
               role="tab"
               aria-selected={activeTab === tab.id}
               key={tab.id}
-              className={activeTab === tab.id ? "active" : ""}
+              className={`relative flex min-w-0 items-center justify-center gap-[clamp(2px,.45cqw,6px)] overflow-hidden border-0 border-b-2 bg-transparent px-[clamp(2px,.65cqw,8px)] text-[clamp(7px,.72cqw,11px)] font-bold transition ${activeTab === tab.id ? "border-amber-400 text-amber-300" : "border-transparent text-slate-500 hover:text-slate-300"}`}
               onClick={() => onTabChange(tab.id)}
             >
-              <i>{tab.short}</i>
-              <span>{locale === "fa" ? tab.label : tab.english}</span>
+              <i className="shrink-0 font-mono text-[clamp(6px,.62cqw,10px)] not-italic opacity-60">{tab.short}</i>
+              <span className="min-w-0 truncate whitespace-nowrap @max-[560px]:hidden">{locale === "fa" ? tab.label : tab.english}</span>
             </button>
           ))}
         </div>
-        <div className="scope-context">
-          <span>Probe</span>
-          <b>{algorithm ? localizeAlgorithm(algorithm, locale).name : "—"}</b>
-          <em>
+        <div className="ms-auto flex min-w-0 items-center gap-[clamp(4px,.7cqw,8px)] text-[clamp(7px,.62cqw,9px)] @max-[820px]:hidden">
+          <span className="font-mono text-[7px] uppercase tracking-wider text-slate-600">Probe</span>
+          <b className="max-w-40 truncate text-slate-300">{algorithm ? localizeAlgorithm(algorithm, locale).name : "—"}</b>
+          <em className="whitespace-nowrap font-mono text-[7px] not-italic text-slate-600">
             {data ? `${data.kind} • ${signalDataLength(data)}` : "No data"}
           </em>
         </div>
         <button
           type="button"
-          className="scope-expand-button"
+          className="grid size-[clamp(26px,2.5cqw,34px)] shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[.025] text-slate-400 transition hover:border-white/20 hover:text-white"
           aria-expanded={expanded}
           aria-label={expanded ? "جمع‌کردن" : "بازکردن تحلیل"}
           onClick={() => onExpandedChange(!expanded)}
@@ -95,7 +95,7 @@ export function AnalysisDeck({
           </svg>
         </button>
       </div>
-      <div className="scope-content" role="tabpanel">
+      <div className="grid min-h-0 overflow-auto p-[clamp(4px,.7cqw,10px)] [scrollbar-color:rgba(148,163,184,.18)_transparent] [scrollbar-width:thin] [&>*]:h-full" role="tabpanel">
         {activeTab === "time" && <TimePlot data={data} locale={locale} />}
         {activeTab === "spectrum" && (
           <SpectrumPlot data={data} locale={locale} />
@@ -105,17 +105,17 @@ export function AnalysisDeck({
         )}
         {activeTab === "bits" && <BitsPlot data={data} locale={locale} />}
         {activeTab === "logs" && (
-          <div className="log-view" dir={locale === "fa" ? "rtl" : "ltr"}>
-            <div className="log-summary">
-              <span>Run #{runCount}</span>
-              <b>
+          <div className="h-full overflow-auto rounded-lg bg-black/20 p-2 font-mono text-[8px]" dir={locale === "fa" ? "rtl" : "ltr"}>
+            <div className="mb-2 flex items-center gap-3 border-b border-white/[.07] pb-2 text-slate-500">
+              <span className="text-amber-300">Run #{runCount}</span>
+              <b className="text-slate-400">
                 {run.logs.length} {tr(locale, "رویداد", "events")}
               </b>
-              <em>{numberText(run.elapsed)} ms</em>
+              <em className="ms-auto not-italic text-slate-600">{numberText(run.elapsed)} ms</em>
             </div>
             {run.logs.map((line, index) => (
-              <p key={`${line}-${index}`}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
+              <p className="m-0 grid grid-cols-[24px_1fr] gap-2 border-b border-white/[.035] py-1.5 leading-4 text-slate-400" key={`${line}-${index}`}>
+                <span className="text-slate-700">{String(index + 1).padStart(2, "0")}</span>
                 {localizeLog(line, locale)}
               </p>
             ))}

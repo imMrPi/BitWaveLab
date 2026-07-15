@@ -51,15 +51,15 @@ export function LocalRecommendationPopover({
     .join("، ");
   return (
     <section
-      className="node-local-recommender"
+      className="absolute left-1/2 top-[calc(100%+8px)] z-30 grid w-80 -translate-x-1/2 gap-3 rounded-2xl border border-violet-400/20 bg-[#11151c] p-3 shadow-2xl shadow-black/60"
       onPointerDown={(event) => event.stopPropagation()}
       onClick={(event) => event.stopPropagation()}
       dir={locale === "fa" ? "rtl" : "ltr"}
     >
-      <header>
+      <header className="flex items-center justify-between border-b border-white/10 pb-2">
         <div>
-          <span>LOCAL PATH</span>
-          <b>
+          <span className="block font-mono text-[7px] font-black tracking-[.14em] text-violet-300">LOCAL PATH</span>
+          <b className="mt-1 block text-[10px] text-slate-200">
             {tr(
               locale,
               "گزینه‌های سازگار این اتصال",
@@ -67,22 +67,22 @@ export function LocalRecommendationPopover({
             )}
           </b>
         </div>
-        <button type="button" onClick={onClose}>
+        <button className="grid size-7 place-items-center rounded-lg border border-white/10 bg-white/[.03] text-slate-500 hover:text-white" type="button" onClick={onClose}>
           ×
         </button>
       </header>
-      <div className="local-contract" dir="ltr">
-        <span>{previous?.shortName ?? "START"}</span>
-        <i>
+      <div className="flex items-center justify-center gap-1.5 rounded-lg border border-white/[.07] bg-black/20 p-2 font-mono text-[7px]" dir="ltr">
+        <span className="text-slate-500">{previous?.shortName ?? "START"}</span>
+        <i className="not-italic text-slate-700">
           {formatKind(recommendation.previous?.outputKind ?? "none", locale)}
         </i>
-        <b>→</b>
-        <strong>{current?.shortName}</strong>
-        <b>→</b>
-        <span>{next || "END"}</span>
+        <b className="text-slate-700">→</b>
+        <strong className="text-violet-300">{current?.shortName}</strong>
+        <b className="text-slate-700">→</b>
+        <span className="truncate text-slate-500">{next || "END"}</span>
       </div>
-      <label>
-        <span>
+      <label className="grid gap-1.5">
+        <span className="text-[8px] font-bold text-slate-500">
           {tr(
             locale,
             "عمل و الگوریتم را انتخاب کن",
@@ -90,6 +90,7 @@ export function LocalRecommendationPopover({
           )}
         </span>
         <select
+          className="h-9 w-full rounded-lg border border-white/10 bg-[#090c10] px-2 text-[8px] text-slate-200 outline-none focus:border-violet-400/30"
           value={selectedId}
           onChange={(event) => setSelectedId(event.target.value)}
         >
@@ -123,20 +124,20 @@ export function LocalRecommendationPopover({
         </select>
       </label>
       {selected ? (
-        <div className="local-choice">
-          <span>
+        <div className="rounded-lg border border-violet-400/15 bg-violet-400/[.04] p-2.5">
+          <span className="text-[8px] font-bold text-violet-300">
             {locale === "fa"
               ? roleInfo[selected.role].fa
               : roleInfo[selected.role].en}{" "}
             · {selected.score}
           </span>
-          <p>{locale === "fa" ? selected.reasonFa : selected.reasonEn}</p>
-          <code dir="ltr">
+          <p className="my-1.5 text-[8px] leading-4 text-slate-400">{locale === "fa" ? selected.reasonFa : selected.reasonEn}</p>
+          <code className="font-mono text-[7px] text-slate-600" dir="ltr">
             {selected.inputKind} → {selected.outputKind}
           </code>
         </div>
       ) : (
-        <p className="local-empty">
+        <p className="m-0 rounded-lg bg-white/[.02] p-2.5 text-[8px] leading-4 text-slate-600">
           {tr(
             locale,
             "فقط گزینه‌هایی نمایش داده می‌شوند که ورودی، خروجی و نودهای دو طرف آن‌ها با اتصال فعلی سازگار باشند.",
@@ -146,7 +147,7 @@ export function LocalRecommendationPopover({
       )}
       <button
         type="button"
-        className="local-apply"
+        className="h-9 rounded-lg border border-violet-400/20 bg-violet-400/10 text-[8px] font-bold text-violet-300 transition hover:bg-violet-400/15 disabled:cursor-not-allowed disabled:opacity-35"
         disabled={!selected}
         onClick={() => selected && onApply(selected)}
       >

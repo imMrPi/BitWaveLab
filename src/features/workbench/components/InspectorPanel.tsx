@@ -74,16 +74,16 @@ export function InspectorPanel({
     algorithm?.params.filter((parameter) => !parameter.hidden) ?? [];
   return (
     <aside
-      className="inspector-panel"
+      className="grid h-full min-h-0 grid-rows-[77px_minmax(0,1fr)] border-l border-slate-400/[.13] bg-[#0c0f14] [direction:rtl]"
       dir={locale === "fa" ? "rtl" : "ltr"}
       lang={locale}
     >
-      <div className="panel-heading inspector-heading">
+      <div className="flex h-[77px] items-center justify-between gap-3 border-b border-slate-400/[.13] bg-[#0c0f14] px-[15px]">
         <div>
-          <span className="eyebrow">NODE INSPECTOR</span>
-          <h2>{tr(locale, "پارامتر و منطق", "Parameters & logic")}</h2>
+          <span className="block font-mono text-[7px] font-black tracking-[.15em] text-amber-400">NODE INSPECTOR</span>
+          <h2 className="mt-1 text-[11px] text-slate-100">{tr(locale, "پارامتر و منطق", "Parameters & logic")}</h2>
         </div>
-        <span className={`inspector-status ${result?.status ?? "idle"}`}>
+        <span className={`rounded-full border px-2 py-1 font-mono text-[7px] ${result?.status === "error" ? "border-rose-400/20 bg-rose-400/10 text-rose-300" : result?.status === "success" ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300" : "border-white/10 bg-white/[.03] text-slate-500"}`}>
           {result?.status === "error"
             ? tr(locale, "خطا", "Error")
             : result?.status === "success"
@@ -92,36 +92,36 @@ export function InspectorPanel({
         </span>
       </div>
       {node && algorithm ? (
-        <div className="inspector-scroll lab-scrollbar">
+        <div className="min-h-0 overflow-y-auto p-3 [scrollbar-color:rgba(148,163,184,.18)_transparent] [scrollbar-width:thin]">
           <section
-            className="inspector-hero"
+            className="mb-3 grid grid-cols-[48px_minmax(0,1fr)] gap-3 rounded-xl border border-white/[.08] bg-white/[.02] p-3"
             style={
               {
                 "--node-color": categoryMeta[algorithm.category].color,
               } as CSSProperties
             }
           >
-            <div className="inspector-icon">
+            <div className="grid size-12 place-items-center rounded-xl border font-mono text-[9px] font-black" style={{ borderColor: `${categoryMeta[algorithm.category].color}55`, background: `${categoryMeta[algorithm.category].color}14`, color: categoryMeta[algorithm.category].color }}>
               {algorithm.shortName.slice(0, 3)}
             </div>
-            <div>
-              <span>{localizeCategory(algorithm.category, locale).name}</span>
-              <h3>{copy?.name}</h3>
-              <p>{copy?.summary}</p>
+            <div className="min-w-0">
+              <span className="text-[7px] font-bold text-slate-600">{localizeCategory(algorithm.category, locale).name}</span>
+              <h3 className="my-1 truncate text-[11px] text-slate-100">{copy?.name}</h3>
+              <p className="m-0 line-clamp-2 text-[8px] leading-4 text-slate-500">{copy?.summary}</p>
             </div>
           </section>
-          <section className="mentor-panel">
-            <div className="mentor-title">
-              <span>✦</span>
-              <div>
-                <b>
+          <section className="mb-3 overflow-hidden rounded-xl border border-violet-400/15 bg-violet-400/[.035]">
+            <div className="grid grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-2 border-b border-violet-400/10 p-3">
+              <span className="grid size-7 place-items-center rounded-lg bg-violet-400/10 text-violet-300">✦</span>
+              <div className="min-w-0">
+                <b className="block text-[9px] text-slate-200">
                   {tr(
                     locale,
                     "راهنمای هوشمند زنجیره",
                     "Intelligent pipeline guide",
                   )}
                 </b>
-                <small>
+                <small className="mt-0.5 block text-[7px] text-slate-600">
                   {tr(
                     locale,
                     "بر اساس کل مسیر، نه فقط یک نود",
@@ -129,20 +129,20 @@ export function InspectorPanel({
                   )}
                 </small>
               </div>
-              <em>{assessment.completion}%</em>
+              <em className="font-mono text-[8px] not-italic text-violet-300">{assessment.completion}%</em>
             </div>
-            <div className="pipeline-assessment">
+            <div className="grid gap-2 border-b border-violet-400/10 p-3 [&>div]:grid [&>div]:grid-cols-[22px_minmax(0,1fr)_28px] [&>div]:items-center [&>div]:gap-2 [&>div>span]:font-mono [&>div>span]:text-[7px] [&>div>span]:text-slate-500 [&>div>strong]:font-mono [&>div>strong]:text-[7px] [&>div>strong]:text-slate-500 [&>p]:m-0 [&>p]:text-[7px] [&>p]:leading-4 [&>p]:text-amber-300/70">
               <div>
                 <span>TX</span>
-                <i>
-                  <b style={{ width: `${assessment.transmitter}%` }} />
+                <i className="h-1.5 overflow-hidden rounded-full bg-black/30">
+                  <b className="block h-full rounded-full bg-cyan-400/60" style={{ width: `${assessment.transmitter}%` }} />
                 </i>
                 <strong>{assessment.transmitter}%</strong>
               </div>
               <div>
                 <span>RX</span>
-                <i>
-                  <b style={{ width: `${assessment.receiver}%` }} />
+                <i className="h-1.5 overflow-hidden rounded-full bg-black/30">
+                  <b className="block h-full rounded-full bg-violet-400/60" style={{ width: `${assessment.receiver}%` }} />
                 </i>
                 <strong>{assessment.receiver}%</strong>
               </div>
@@ -150,26 +150,27 @@ export function InspectorPanel({
                 <p key={index}>⚠ {warning}</p>
               ))}
             </div>
-            <div className="mentor-list">
+            <div className="grid gap-2 p-2.5">
               {suggestions.length ? (
                 suggestions.map((item) => {
                   const suggestion = localizeSuggestion(item, locale);
                   return (
-                    <article key={item.id} className={item.level}>
-                      <div>
-                        <span>
+                    <article key={item.id} className={`rounded-lg border p-2.5 ${item.level === "important" ? "border-rose-400/15 bg-rose-400/[.035]" : item.level === "optimize" ? "border-cyan-400/15 bg-cyan-400/[.035]" : "border-amber-400/15 bg-amber-400/[.035]"}`}>
+                      <div className="mb-1 grid gap-0.5">
+                        <span className="font-mono text-[6px] text-slate-600">
                           {locale === "fa"
                             ? roleInfo[item.role].fa
                             : roleInfo[item.role].en}{" "}
                           · {item.confidence}%
                         </span>
-                        <b>{suggestion.title}</b>
+                        <b className="text-[8px] text-slate-200">{suggestion.title}</b>
                       </div>
-                      <p>{suggestion.reason}</p>
-                      <small>
+                      <p className="my-1.5 text-[7px] leading-4 text-slate-500">{suggestion.reason}</p>
+                      <small className="block text-[7px] leading-4 text-slate-600">
                         {tr(locale, "نتیجه:", "Outcome:")} {suggestion.outcome}
                       </small>
                       <button
+                        className="mt-2 h-7 w-full rounded-md border border-white/10 bg-white/[.035] text-[7px] font-bold text-slate-300 hover:bg-white/[.07]"
                         type="button"
                         onClick={() => onApplySuggestion(item.algorithmId)}
                       >
@@ -184,8 +185,8 @@ export function InspectorPanel({
                   );
                 })
               ) : (
-                <div className="mentor-complete">
-                  <b>
+                <div className="rounded-lg border border-emerald-400/10 bg-emerald-400/[.035] p-3">
+                  <b className="block text-[8px] leading-4 text-emerald-300">
                     ✓{" "}
                     {tr(
                       locale,
@@ -193,7 +194,7 @@ export function InspectorPanel({
                       "No required next step remains at this point.",
                     )}
                   </b>
-                  <span>
+                  <span className="mt-1.5 block text-[7px] leading-4 text-slate-600">
                     {tr(
                       locale,
                       "یک نود دیگر از مسیر را انتخاب کن یا BER نهایی را بررسی کن.",
@@ -204,12 +205,12 @@ export function InspectorPanel({
               )}
             </div>
           </section>
-          <section className="contract-card">
+          <section className="mb-3 grid grid-cols-[1fr_24px_1fr] items-center rounded-xl border border-white/[.08] bg-black/15 p-2 text-center [&>div>span]:block [&>div>span]:text-[7px] [&>div>span]:text-slate-600 [&>div>b]:mt-1 [&>div>b]:block [&>div>b]:font-mono [&>div>b]:text-[8px] [&>div>b]:text-slate-300">
             <div>
               <span>{tr(locale, "ورودی", "Input")}</span>
               <b>{formatKind(algorithm.input, locale)}</b>
             </div>
-            <i aria-hidden="true">{locale === "fa" ? "←" : "→"}</i>
+            <i className="not-italic text-slate-700" aria-hidden="true">{locale === "fa" ? "←" : "→"}</i>
             <div>
               <span>{tr(locale, "خروجی", "Output")}</span>
               <b>{formatKind(algorithm.output, locale)}</b>
@@ -218,7 +219,7 @@ export function InspectorPanel({
           {algorithm.input !== "none" && (
             <button
               type="button"
-              className={`inspector-bypass ${node.disabled ? "active" : ""}`}
+              className={`mb-3 grid w-full grid-cols-[32px_1fr] items-center gap-2 rounded-xl border p-2.5 text-start transition ${node.disabled ? "border-amber-400/25 bg-amber-400/[.07]" : "border-white/[.08] bg-white/[.02] hover:bg-white/[.04]"} [&>span]:grid [&>span]:size-8 [&>span]:place-items-center [&>span]:rounded-lg [&>span]:bg-white/5 [&>span]:text-amber-300 [&_b]:block [&_b]:text-[8px] [&_b]:text-slate-200 [&_small]:mt-1 [&_small]:block [&_small]:text-[7px] [&_small]:leading-4 [&_small]:text-slate-600`}
               onClick={() => onToggleBypass(node.id)}
             >
               <span>⏻</span>
@@ -238,8 +239,8 @@ export function InspectorPanel({
               </div>
             </button>
           )}
-          <section className="inspector-section">
-            <div className="section-title">
+          <section className="mb-3 rounded-xl border border-white/[.08] bg-white/[.018] p-3">
+            <div className="mb-3 grid grid-cols-[28px_1fr] items-center gap-2 [&>span]:grid [&>span]:size-7 [&>span]:place-items-center [&>span]:rounded-lg [&>span]:bg-white/5 [&>span]:text-slate-400 [&_h4]:m-0 [&_h4]:text-[9px] [&_h4]:text-slate-200 [&_p]:mt-0.5 [&_p]:text-[7px] [&_p]:text-slate-600">
               <span>⚙</span>
               <div>
                 <h4>{tr(locale, "پارامترها", "Parameters")}</h4>
@@ -253,11 +254,11 @@ export function InspectorPanel({
               </div>
             </div>
             {parameters.length ? (
-              <div className="parameter-list">
+              <div className="grid gap-3">
                 {parameters.map((definition) => (
                   <label
                     key={definition.key}
-                    className={`parameter ${definition.type}`}
+                    className="grid gap-1.5 [&>span]:flex [&>span]:items-center [&>span]:justify-between [&>span>b]:text-[8px] [&>span>b]:text-slate-400 [&>span>small]:font-mono [&>span>small]:text-[7px] [&>span>small]:text-slate-600 [&>output]:justify-self-end [&>output]:rounded [&>output]:bg-amber-400/10 [&>output]:px-1.5 [&>output]:py-0.5 [&>output]:font-mono [&>output]:text-[7px] [&>output]:text-amber-300"
                   >
                     <span>
                       <b>
@@ -284,7 +285,7 @@ export function InspectorPanel({
                 ))}
               </div>
             ) : (
-              <div className="no-parameters">
+              <div className="rounded-lg border border-dashed border-white/10 p-3 text-center text-[8px] text-slate-600">
                 {tr(
                   locale,
                   "این بلوک پارامتر قابل تنظیم ندارد.",
@@ -293,8 +294,8 @@ export function InspectorPanel({
               </div>
             )}
           </section>
-          <section className="inspector-section theory-section">
-            <div className="section-title">
+          <section className="mb-3 rounded-xl border border-white/[.08] bg-white/[.018] p-3 [&>p]:text-[8px] [&>p]:leading-5 [&>p]:text-slate-500">
+            <div className="mb-3 grid grid-cols-[28px_1fr] items-center gap-2 [&>span]:grid [&>span]:size-7 [&>span]:place-items-center [&>span]:rounded-lg [&>span]:bg-violet-400/10 [&>span]:text-violet-300 [&_h4]:m-0 [&_h4]:text-[9px] [&_h4]:text-slate-200 [&_p]:mt-0.5 [&_p]:text-[7px] [&_p]:text-slate-600">
               <span>∑</span>
               <div>
                 <h4>{tr(locale, "منطق آموزشی", "Educational logic")}</h4>
@@ -314,13 +315,13 @@ export function InspectorPanel({
               </div>
             </div>
             <p>{copy?.theory}</p>
-            <div className="theory-meta">
-              <span>Operation</span>
-              <code dir="ltr">{algorithm.operation}</code>
+            <div className="mt-2 flex items-center justify-between gap-2 rounded-lg bg-black/20 p-2">
+              <span className="text-[7px] text-slate-600">Operation</span>
+              <code className="truncate font-mono text-[7px] text-violet-300" dir="ltr">{algorithm.operation}</code>
             </div>
           </section>
-          <section className="inspector-section">
-            <div className="section-title">
+          <section className="mb-3 rounded-xl border border-white/[.08] bg-white/[.018] p-3">
+            <div className="mb-3 grid grid-cols-[28px_1fr] items-center gap-2 [&>span]:grid [&>span]:size-7 [&>span]:place-items-center [&>span]:rounded-lg [&>span]:bg-emerald-400/10 [&>span]:text-emerald-300 [&_h4]:m-0 [&_h4]:text-[9px] [&_h4]:text-slate-200 [&_p]:mt-0.5 [&_p]:text-[7px] [&_p]:text-slate-600">
               <span>⌁</span>
               <div>
                 <h4>{tr(locale, "خروجی و سنجه‌ها", "Output & metrics")}</h4>
@@ -334,7 +335,7 @@ export function InspectorPanel({
               </div>
             </div>
             {result?.data ? (
-              <div className="metrics-grid">
+              <div className="grid grid-cols-2 gap-1.5 [&>div]:min-w-0 [&>div]:rounded-lg [&>div]:bg-black/15 [&>div]:p-2 [&_span]:block [&_span]:truncate [&_span]:text-[6px] [&_span]:text-slate-600 [&_b]:mt-1 [&_b]:block [&_b]:truncate [&_b]:font-mono [&_b]:text-[7px] [&_b]:text-slate-300">
                 <div>
                   <span>{tr(locale, "نوع", "Type")}</span>
                   <b>{formatKind(result.data.kind, locale)}</b>
@@ -354,7 +355,7 @@ export function InspectorPanel({
               </div>
             ) : (
               <div
-                className={`result-message ${result?.status === "error" ? "error" : ""}`}
+                className={`rounded-lg border border-dashed p-3 text-[8px] leading-5 ${result?.status === "error" ? "border-rose-400/20 bg-rose-400/[.04] text-rose-300" : "border-white/10 text-slate-600"}`}
               >
                 {result?.message ??
                   tr(
@@ -367,7 +368,7 @@ export function InspectorPanel({
           </section>
           <button
             type="button"
-            className="delete-node"
+            className="h-9 w-full rounded-lg border border-rose-400/15 bg-rose-400/[.04] text-[8px] text-rose-300 transition hover:bg-rose-400/10"
             onClick={() => onRemove(node.id)}
           >
             {tr(
@@ -378,10 +379,10 @@ export function InspectorPanel({
           </button>
         </div>
       ) : (
-        <div className="inspector-empty">
-          <span>⌁</span>
-          <h3>{tr(locale, "یک Node را انتخاب کن", "Select a node")}</h3>
-          <p>
+        <div className="grid min-h-0 place-items-center content-center px-8 text-center">
+          <span className="mb-3 text-3xl text-slate-700">⌁</span>
+          <h3 className="m-0 text-xs text-slate-300">{tr(locale, "یک Node را انتخاب کن", "Select a node")}</h3>
+          <p className="mt-2 text-[8px] leading-5 text-slate-600">
             {tr(
               locale,
               "پارامترها، معادله، نوع داده و خروجی آخرین اجرا اینجا نمایش داده می‌شود.",

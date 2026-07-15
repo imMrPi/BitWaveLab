@@ -62,7 +62,7 @@ export function EdgeLayer({
   return (
     <svg
       ref={svgRef}
-      className="edge-layer"
+      className="edge-layer pointer-events-none absolute inset-0 z-0 overflow-visible"
       width={width}
       height={height}
       aria-hidden="true"
@@ -76,7 +76,7 @@ export function EdgeLayer({
         <g key={edge.id} data-edge-id={edge.id} data-edge-from={edge.from} data-edge-to={edge.to}>
           <path
             d={edge.d}
-            className={`edge-hit ${edge.kind === "annotation" ? "annotation" : ""}`}
+            className={`pointer-events-auto cursor-pointer fill-none stroke-transparent stroke-[14] [pointer-events:stroke] ${edge.kind === "annotation" ? "stroke-[10]" : ""}`}
             onPointerDown={(event) => event.stopPropagation()}
             onClick={(event) => {
               event.stopPropagation();
@@ -85,7 +85,7 @@ export function EdgeLayer({
           />
           <path
             d={edge.d}
-            className={`edge-line ${edge.kind === "annotation" ? "annotation" : activeNodeId === edge.to ? "executing" : completedNodeIds.includes(edge.to) ? "completed" : ""}`}
+            className={`pointer-events-none fill-none [stroke-linecap:round] transition-[stroke,opacity] ${edge.kind === "annotation" ? "stroke-blue-400/50 stroke-[1.35] [stroke-dasharray:5_6]" : activeNodeId === edge.to ? "stroke-amber-100 stroke-[3] [stroke-dasharray:10_8]" : completedNodeIds.includes(edge.to) ? "stroke-emerald-400/60 stroke-[1.7]" : "stroke-amber-400/55 stroke-[1.7]"}`}
             filter="url(#edge-glow)"
           />
         </g>

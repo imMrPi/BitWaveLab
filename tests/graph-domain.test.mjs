@@ -6,8 +6,8 @@ import { GraphHistory } from "../src/domain/graph/graph.history.ts";
 import { getGraphExecutionOrder } from "../src/domain/graph/graph.execution-order.ts";
 import { handleGraphCommand } from "../src/domain/graph/graph.reducer.ts";
 import { validateGraph } from "../src/domain/graph/graph.validation.ts";
-import { getLocalNodeRecommendation } from "../app/lib/node-recommendation-engine.ts";
-import { executeGraph, graphFromTemplate } from "../app/lib/signal-engine.ts";
+import { getLocalNodeRecommendation } from "../src/lib/node-recommendation-engine.ts";
+import { executeGraph, graphFromTemplate } from "../src/lib/signal-engine.ts";
 import { bitStreamFor, constellationFor, effectiveSampleRateFor, signalDataLength, waveformFor } from "../src/features/signal-rendering/model/signal-view-model.ts";
 
 const node = (id, x = 0, y = 0) => ({ id, algorithmId: "test", x, y, params: {} });
@@ -60,15 +60,16 @@ test("scope view model uses the semantic data kind and effective bit sample rate
 
 test("edge layer is visible before layout invalidation completes", async () => {
   const component = await readFile(new URL("../src/features/graph-editor/rendering/EdgeLayer.tsx", import.meta.url), "utf8");
-  const styles = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(component, /className="edge-layer"/);
+  const styles = await readFile(new URL("../src/styles/styles.css", import.meta.url), "utf8");
+  assert.match(component, /pointer-events-none absolute inset-0/);
   assert.doesNotMatch(component, /measuring/);
-  assert.match(styles, /\.edge-layer\s*\{[^}]*opacity:\s*1/);
-  assert.doesNotMatch(styles, /\.edge-layer\.measuring\s*\{[^}]*opacity:\s*0/);
+  assert.match(styles, /@import "tailwindcss"/);
+  assert.doesNotMatch(styles, /edge-layer/);
 });
 
 test("pointer movement uses the animation frame renderer and commits React state only on release", async () => {
-  const workbench = await readFile(new URL("../app/components/SignalWorkbench.tsx", import.meta.url), "utf8");
+  const workbench = await readFile(new URL("../src/features/workbench/hooks/use-signal-workbench-controller.ts", import.meta.url), "utf8");
+  const shortcuts = await readFile(new URL("../src/features/workbench/hooks/use-workbench-shortcuts.ts", import.meta.url), "utf8");
   const moveHandler = workbench.slice(workbench.indexOf("function moveDrag"), workbench.indexOf("function finishDrag"));
   const finishStart = workbench.indexOf("function finishDrag");
   const finishHandler = workbench.slice(finishStart, workbench.indexOf("useEffect(() => () =>", finishStart));
@@ -79,8 +80,8 @@ test("pointer movement uses the animation frame renderer and commits React state
   assert.match(workbench, /addEventListener\("wheel", handleNativeWheel, \{ passive: false, capture: true \}\)/);
   assert.match(workbench, /removeEventListener\("wheel", handleNativeWheel, true\)/);
   assert.doesNotMatch(workbench, /onWheel=/);
-  assert.match(workbench, /event\.ctrlKey \|\| event\.metaKey/);
-  assert.match(workbench, /event\.preventDefault\(\)/);
+  assert.match(shortcuts, /event\.ctrlKey \|\| event\.metaKey/);
+  assert.match(shortcuts, /event\.preventDefault\(\)/);
   assert.match(workbench, /worldX \* nextZoom - pointerX/);
   assert.match(workbench, /INITIAL_CANVAS_WIDTH = 5200/);
   assert.match(workbench, /maxX \+ CANVAS_GROWTH_MARGIN/);
@@ -158,11 +159,14 @@ test("local recommendations obey both adjacent data contracts", () => {
 });
 
 test("workbench exposes note visibility and a per-node local recommendation select", async () => {
-  const workbench = await readFile(new URL("../app/components/SignalWorkbench.tsx", import.meta.url), "utf8");
+  const controller = await readFile(new URL("../src/features/workbench/hooks/use-signal-workbench-controller.ts", import.meta.url), "utf8");
+  const view = await readFile(new URL("../src/features/workbench/components/SignalWorkbenchView.tsx", import.meta.url), "utf8");
+  const node = await readFile(new URL("../src/features/workbench/canvas/GraphNodeCard.tsx", import.meta.url), "utf8");
+  const workbench = `${controller}\n${view}\n${node}`;
   const recommendation = await readFile(new URL("../src/features/workbench/components/LocalRecommendationPopover.tsx", import.meta.url), "utf8");
   assert.match(workbench, /showGuideNotes/);
-  assert.match(workbench, /guide-collapse/);
-  assert.match(workbench, /node-local-recommend/);
-  assert.match(recommendation, /<select value=\{selectedId\}/);
+  assert.match(workbench, /collapsed: !collapsed/);
+  assert.match(workbench, /setLocalRecommendationNodeId/);
+  assert.match(recommendation, /value=\{selectedId\}/);
   assert.match(workbench, /local-recommendation-applied/);
 });

@@ -115,13 +115,13 @@ export function NodeInsight({
   const outputValue = visibleAfter[cursor] ?? 0;
   const copy = localizeAlgorithm(algorithm, locale);
   return (
-    <div className="insight-backdrop" onMouseDown={onClose}>
+    <div className="fixed inset-0 z-[80] grid place-items-center bg-black/70 p-4 backdrop-blur-sm" onMouseDown={onClose}>
       <section
-        className="node-insight"
+        className="grid max-h-[min(760px,94dvh)] w-[min(940px,96vw)] gap-3 overflow-y-auto rounded-2xl border border-white/10 bg-[#0e1117] p-4 shadow-2xl shadow-black/70 [scrollbar-color:rgba(148,163,184,.18)_transparent] [scrollbar-width:thin]"
         onMouseDown={(event) => event.stopPropagation()}
         dir={locale === "fa" ? "rtl" : "ltr"}
       >
-        <header>
+        <header className="flex items-start justify-between gap-4 border-b border-white/10 pb-3 [&_span]:font-mono [&_span]:text-[7px] [&_span]:tracking-[.12em] [&_span]:text-violet-300 [&_h2]:mt-1 [&_h2]:text-lg [&_h2]:text-slate-100">
           <div>
             <span>
               {roleInfo[role].side} ·{" "}
@@ -129,11 +129,11 @@ export function NodeInsight({
             </span>
             <h2>! {copy.name}</h2>
           </div>
-          <button type="button" onClick={onClose}>
+          <button className="grid size-8 place-items-center rounded-lg border border-white/10 bg-white/[.03] text-slate-500 hover:bg-white/[.07] hover:text-white" type="button" onClick={onClose}>
             ×
           </button>
         </header>
-        <div className="insight-chain">
+        <div className="grid grid-cols-[1fr_32px_1fr] items-center gap-2 [&>div]:rounded-xl [&>div]:border [&>div]:border-white/[.08] [&>div]:bg-white/[.02] [&>div]:p-3 [&_small]:block [&_small]:text-[7px] [&_small]:text-slate-600 [&_b]:mt-1 [&_b]:block [&_b]:text-[9px] [&_b]:text-slate-200 [&_em]:mt-1 [&_em]:block [&_em]:font-mono [&_em]:text-[7px] [&_em]:not-italic [&_em]:text-slate-500">
           <div>
             <small>{tr(locale, "مرحله قبل", "Previous stage")}</small>
             <b>
@@ -143,55 +143,56 @@ export function NodeInsight({
             </b>
             <em>{formatKind(input?.kind ?? "none", locale)}</em>
           </div>
-          <i>→</i>
-          <div className="active">
+          <i className="text-center not-italic text-slate-600">→</i>
+          <div className="!border-violet-400/20 !bg-violet-400/[.04]">
             <small>{tr(locale, "این نود", "This node")}</small>
             <b>{copy.name}</b>
             <em>{formatKind(output?.kind ?? algorithm.output, locale)}</em>
           </div>
         </div>
-        <p className="insight-explanation">{roleAction(role, locale)}</p>
-        <div className="insight-live-head">
+        <p className="m-0 rounded-xl border border-white/[.07] bg-black/15 p-3 text-[9px] leading-6 text-slate-400">{roleAction(role, locale)}</p>
+        <div className="flex items-center justify-between gap-3 text-[8px] text-slate-400 max-[620px]:items-start max-[620px]:flex-col">
           <div>
-            <span className="live-dot" />{" "}
+            <span className="me-1 inline-block size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,.7)]" />{" "}
             {tr(locale, "پروب لحظه‌ای دامنه–زمان", "Live amplitude–time probe")}
           </div>
-          <code dir="ltr">
+          <code className="font-mono text-[7px] text-slate-600" dir="ltr">
             t={((cursor / sampleRate) * 1000).toFixed(3)} ms · in=
             {inputValue.toFixed(3)} · out={outputValue.toFixed(3)}
           </code>
         </div>
-        <div className="insight-chart">
-          <svg viewBox="0 0 920 240" preserveAspectRatio="none">
-            <line x1="0" x2="920" y1="120" y2="120" />
-            <path className="before" d={makePath(visibleBefore)} />
-            <path className="after" d={makePath(visibleAfter)} />
+        <div className="grid min-h-64 grid-rows-[minmax(220px,1fr)_30px] overflow-hidden rounded-xl border border-white/[.08] bg-black/20">
+          <svg className="size-full" viewBox="0 0 920 240" preserveAspectRatio="none">
+            <line className="stroke-white/10 [stroke-dasharray:4_6]" x1="0" x2="920" y1="120" y2="120" />
+            <path className="fill-none stroke-slate-500/50 stroke-[1.5]" d={makePath(visibleBefore)} />
+            <path className="fill-none stroke-violet-300 stroke-2" d={makePath(visibleAfter)} />
             <line
-              className="cursor"
+              className="stroke-amber-300/70 stroke-1"
               x1={(cursor / Math.max(1, count - 1)) * 920}
               x2={(cursor / Math.max(1, count - 1)) * 920}
               y1="12"
               y2="228"
             />
             <circle
+              className="fill-amber-300 stroke-amber-100 stroke-1"
               cx={(cursor / Math.max(1, count - 1)) * 920}
               cy={120 - (outputValue / max) * 88}
               r="5"
             />
           </svg>
-          <div>
+          <div className="flex items-center gap-4 border-t border-white/[.06] px-3 text-[7px] text-slate-500 [&>span]:flex [&>span]:items-center [&>span]:gap-1.5 [&>span>i]:inline-block [&>span>i]:h-0.5 [&>span>i]:w-4 [&>b]:ms-auto [&>b]:text-slate-600">
             <span>
-              <i className="before" />
+              <i className="bg-slate-500/60" />
               {tr(locale, "ورودی", "Input")}
             </span>
             <span>
-              <i className="after" />
+              <i className="bg-violet-300" />
               {tr(locale, "خروجی", "Output")}
             </span>
             <b>{tr(locale, "دامنه", "Amplitude")}</b>
           </div>
         </div>
-        <div className="insight-metrics">
+        <div className="grid grid-cols-6 gap-2 max-[760px]:grid-cols-3 max-[460px]:grid-cols-2 [&>div]:rounded-lg [&>div]:border [&>div]:border-white/[.07] [&>div]:bg-white/[.02] [&>div]:p-2.5 [&_span]:block [&_span]:text-[7px] [&_span]:text-slate-600 [&_b]:mt-1 [&_b]:block [&_b]:font-mono [&_b]:text-[8px] [&_b]:text-slate-300">
           <div>
             <span>{tr(locale, "قله ورودی", "Input peak")}</span>
             <b>{numberText(before.peak)}</b>

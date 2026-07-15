@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { algorithmPlugins } from "../src/algorithms/registry.ts";
-import { algorithmById, algorithms, defaultParams, executeGraph, graphFromTemplate, runAlgorithm } from "../app/lib/signal-engine.ts";
+import { algorithmById, algorithms, defaultParams, executeGraph, graphFromTemplate, runAlgorithm } from "../src/lib/signal-engine.ts";
 
 const expectedCategoryCounts = {
   sources: 8,

@@ -208,10 +208,10 @@ export function MediaSourceContent({
   const bitCount = Number(data?.metrics.payloadBits ?? 0);
   if (kind === "microphone")
     return (
-      <div className="media-source-content microphone-source">
+      <div className="grid min-h-0 grid-cols-[52px_minmax(0,1fr)] items-center gap-2 overflow-hidden p-2 [&>audio]:col-span-2 [&>audio]:h-7 [&>audio]:w-full [&>footer]:col-span-2 [&>footer]:flex [&>footer]:items-center [&>footer]:justify-between [&>footer]:gap-2 [&>footer]:border-t [&>footer]:border-white/[.06] [&>footer]:pt-1.5 [&>footer]:text-[6px] [&>footer]:text-slate-600 [&>footer>code]:font-mono [&>footer>code]:text-amber-300/70">
         <button
           type="button"
-          className={`microphone-orb ${recording ? "recording" : ""}`}
+          className={`relative grid size-12 place-items-center rounded-full border text-lg transition ${recording ? "animate-pulse border-rose-400/50 bg-rose-400/15 shadow-[0_0_18px_rgba(251,113,133,.25)]" : "border-cyan-400/25 bg-cyan-400/[.07] hover:border-cyan-300/50 hover:bg-cyan-400/10"} [&>i]:absolute [&>i]:inset-1 [&>i]:rounded-full [&>i]:border [&>i]:border-current [&>i]:opacity-20`}
           onClick={recording ? stopRecording : startRecording}
           aria-label={
             recording
@@ -222,8 +222,8 @@ export function MediaSourceContent({
           <span>🎙</span>
           <i />
         </button>
-        <div className="media-source-copy">
-          <b>
+        <div className="min-w-0">
+          <b className="block truncate text-[8px] text-slate-200">
             {recording
               ? tr(locale, "در حال ضبط…", "Recording…")
               : payload
@@ -234,7 +234,7 @@ export function MediaSourceContent({
                   )
                 : tr(locale, "برای ضبط کلیک کن", "Click to record")}
           </b>
-          <small>
+          <small className="mt-1 block text-[6px] leading-3 text-slate-600">
             {tr(
               locale,
               "حداکثر ۶ ثانیه · فشرده‌سازی کم‌حجم آزمایشگاهی",
@@ -253,7 +253,7 @@ export function MediaSourceContent({
     );
   if (kind === "image")
     return (
-      <div className="media-source-content image-source">
+      <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_20px] overflow-hidden p-2 [&>footer]:flex [&>footer]:items-end [&>footer]:justify-between [&>footer]:gap-2 [&>footer]:text-[6px] [&>footer]:text-slate-600 [&>footer>code]:font-mono [&>footer>code]:text-amber-300/70">
         <input
           ref={fileRef}
           type="file"
@@ -264,7 +264,7 @@ export function MediaSourceContent({
         />
         <button
           type="button"
-          className={`image-drop-zone ${dragging ? "dragging" : ""}`}
+          className={`grid min-h-0 grid-cols-[56px_minmax(0,1fr)] grid-rows-[1fr_1fr] items-center gap-x-2 overflow-hidden rounded-lg border border-dashed p-2 text-start transition ${dragging ? "border-cyan-300 bg-cyan-400/10" : "border-white/15 bg-black/15 hover:border-cyan-400/35 hover:bg-cyan-400/[.04]"}`}
           onClick={() => fileRef.current?.click()}
           onDragEnter={(event) => {
             event.preventDefault();
@@ -289,15 +289,15 @@ export function MediaSourceContent({
         >
           {payload ? (
             <span
-              className="image-source-preview"
+              className="row-span-2 size-14 rounded-md bg-cover bg-center shadow-inner"
               style={{ backgroundImage: `url(${payload})` }}
               role="img"
               aria-label={tr(locale, "تصویر انتخاب‌شده", "Selected image")}
             />
           ) : (
-            <span className="image-placeholder">▧</span>
+            <span className="row-span-2 grid size-14 place-items-center rounded-md bg-white/5 text-xl text-slate-600">▧</span>
           )}
-          <b>
+          <b className="self-end truncate text-[8px] text-slate-300">
             {payload
               ? tr(
                   locale,
@@ -306,7 +306,7 @@ export function MediaSourceContent({
                 )
               : tr(locale, "تصویر را اینجا رها کن", "Drop image here")}
           </b>
-          <small>
+          <small className="self-start text-[6px] text-slate-600">
             {tr(locale, "یا برای انتخاب فایل کلیک کن", "or click to browse")}
           </small>
         </button>
@@ -324,10 +324,11 @@ export function MediaSourceContent({
       </div>
     );
   return (
-    <div className="media-source-content text-source">
-      <label>
-        <span>{tr(locale, "متن ورودی UTF-8", "UTF-8 input text")}</span>
+    <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_20px] overflow-hidden p-2 [&>footer]:flex [&>footer]:items-end [&>footer]:justify-between [&>footer]:gap-2 [&>footer]:text-[6px] [&>footer]:text-slate-600 [&>footer>code]:font-mono [&>footer>code]:text-amber-300/70">
+      <label className="grid min-h-0 grid-rows-[16px_minmax(0,1fr)]">
+        <span className="text-[7px] text-slate-500">{tr(locale, "متن ورودی UTF-8", "UTF-8 input text")}</span>
         <textarea
+          className="min-h-0 resize-none rounded-lg border border-white/10 bg-black/20 p-2 text-[8px] leading-4 text-slate-200 outline-none placeholder:text-slate-700 focus:border-cyan-400/25"
           value={String(node.params.text ?? "")}
           maxLength={2000}
           dir="auto"
@@ -369,18 +370,18 @@ export function MediaOutputContent({
     : tr(locale, "در انتظار بیت ورودی", "Waiting for input bits");
   const reconstructedUrl = ready ? url : "";
   return (
-    <div className={`media-output-content ${ready ? "ready" : ""}`}>
-      <div className="media-output-head">
-        <span>{ready ? "✓" : "…"}</span>
-        <div>
-          <b>
+    <div className={`grid min-h-0 grid-rows-[38px_minmax(0,1fr)_20px] overflow-hidden p-2 ${ready ? "text-emerald-300" : "text-slate-600"} [&>audio]:h-8 [&>audio]:w-full [&>textarea]:min-h-0 [&>textarea]:resize-none [&>textarea]:rounded-lg [&>textarea]:border [&>textarea]:border-white/10 [&>textarea]:bg-black/20 [&>textarea]:p-2 [&>textarea]:text-[8px] [&>textarea]:text-slate-200 [&>footer]:flex [&>footer]:items-end [&>footer]:justify-between [&>footer]:gap-2 [&>footer]:text-[6px] [&>footer]:text-slate-600 [&>footer>code]:font-mono`}>
+      <div className="grid grid-cols-[24px_minmax(0,1fr)_auto] items-center gap-2 border-b border-white/[.06] pb-1.5">
+        <span className={`grid size-6 place-items-center rounded-full ${ready ? "bg-emerald-400/10 text-emerald-300" : "bg-white/5 text-slate-600"}`}>{ready ? "✓" : "…"}</span>
+        <div className="min-w-0">
+          <b className="block truncate text-[7px] text-slate-300">
             {tr(locale, "بازسازی از مسیر اجرا", "Rebuilt from execution path")}
           </b>
-          <small>
+          <small className="mt-0.5 block truncate text-[6px] text-slate-600">
             {trace} · {data?.stages.length ?? 0} stage
           </small>
         </div>
-        <em className={errors ? "damaged" : "clean"}>
+        <em className={`font-mono text-[7px] not-italic ${errors ? "text-rose-300" : "text-emerald-300"}`}>
           {ready ? `${Math.round(integrity * 100)}%` : "—"}
         </em>
       </div>
@@ -388,8 +389,8 @@ export function MediaOutputContent({
         (reconstructedUrl ? (
           <audio controls preload="metadata" src={reconstructedUrl} />
         ) : (
-          <div className="media-output-empty">
-            <svg className="play-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <div className="grid place-items-center content-center gap-2 rounded-lg border border-dashed border-white/10 p-3 text-center text-[7px] leading-4 text-slate-600">
+            <svg className="size-5" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M8 5v14l11-7z" fill="currentColor" />
             </svg>{" "}
             {tr(
@@ -402,7 +403,7 @@ export function MediaOutputContent({
       {kind === "image" &&
         (reconstructedUrl ? (
           <div
-            className="image-output-preview"
+            className="min-h-20 rounded-lg bg-contain bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${reconstructedUrl})` }}
             role="img"
             aria-label={tr(
@@ -412,8 +413,8 @@ export function MediaOutputContent({
             )}
           />
         ) : (
-          <div className="media-output-empty">
-            <span>▧</span>
+          <div className="grid place-items-center content-center gap-2 rounded-lg border border-dashed border-white/10 p-3 text-center text-[7px] leading-4 text-slate-600">
+            <span className="text-xl">▧</span>
             {tr(
               locale,
               "تصویر فقط از بیت‌های دریافتی ساخته می‌شود.",
